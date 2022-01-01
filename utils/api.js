@@ -6,20 +6,19 @@ const getUrl = headers => {
   return host + FUNCTION_PATH
 }
 
-export default async function handler(req, res) {
+export const createRequest = async (req, res, type) => {
   const searchParams = new URLSearchParams({
     ...req.query,
-    type: 'list'
+    type
   });
 
   const url = getUrl(req.headers)
   const response = await fetch(url + "?" + searchParams.toString())
-
   const payload = await response.json()
 
   if (req.query.format === 'json') {
-    res.status(200).json(payload)
+    res.status(response.status).json(payload)
   }
 
-  res.status(200).send(payload.rawResult)
+  res.status(response.status).send(payload.rawResult)
 }

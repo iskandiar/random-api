@@ -1,7 +1,7 @@
 const { getRandom } = require('./utils/random')
 
 const getRandomItem = (list) => {
-  const splittedList = list.split('|')
+  const splittedList = list.split(/[;\|,]/)
 
   return splittedList[getRandom(0, splittedList.length - 1)]
 }
@@ -19,8 +19,13 @@ exports.handler = async function (event, _context) {
 
   const { type, list, format } = event.queryStringParameters
 
-  if(type === 'list') {
+  if(type === 'item') {
     const result = getRandomItem(list)
+    return formatResponse(result, result, format)
+  }
+
+  if (type === 'dice') {
+    const result = getRandom(1, 6)
     return formatResponse(result, result, format)
   }
 
