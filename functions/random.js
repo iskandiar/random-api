@@ -1,12 +1,29 @@
 const { getRandom } = require('./utils/random')
 
-const getRandomItem = (list) => {
-  const splittedList = list.split(/[;\|,]/)
+const generateRange = len => Array.from(Array(len).keys())
 
-  return splittedList[getRandom(0, splittedList.length - 1)]
+const getRandomItem = (list) => {
+  const item = list[getRandom(0, list.length - 1)]
+
+  return [item, list.filter(_item => item !== _item)]
 }
 
-const formatResponse = (result, rawResult, format) => ({
+const itemHandler = (rawList, pick = 1) => {
+  const list = rawList.split(/[;\|,]/)
+
+  return generateRange(pick).reduce((acc, _item) => {
+    if(acc.list.length === 0) return acc
+
+    const [resultItem, newList] = getRandomItem(acc.list)
+
+    return {
+      list: newList,
+      results: [...acc.results, resultItem]
+    }
+  }, {list, results: []}).results
+}
+
+const formatResponse = ({result, rawResult, format}) => ({
   statusCode: 200,
   body: JSON.stringify({ 
     result,
@@ -17,11 +34,13 @@ const formatResponse = (result, rawResult, format) => ({
 exports.handler = async function (event, _context) {
   // type=list|number|dice|weekday|date|uuid
 
-  const { type, list, format } = event.queryStringParameters
+  const { type, format } = event.queryStringParameters
 
   if(type === 'item') {
-    const result = getRandomItem(list)
-    return formatResponse(result, result, format)
+    const { list, pick } = event.queryStringParameters
+    const result = itemHandler(list, parseInt(pick))
+    
+    return formatResponse({result, rawResult: result.join(", "), format})
   }
 
   if (type === 'dice') {
