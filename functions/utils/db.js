@@ -11,15 +11,14 @@ const firebaseConfig = {
   appId: process.env.APP_ID
 };
 
-console.log('firebaseConfig', firebaseConfig)
-console.log('process.env', process.env)
-
 firebase.initializeApp(firebaseConfig);
 
 const db = firebase.firestore();
 
+const COLLECTION_NAME = "mapping"
+
 const addRecord = (value) => new Promise((resolve, reject) => {
-  db.collection("mapping").add({
+  db.collection(COLLECTION_NAME).add({
     search: value,
   })
     .then((docRef) => {
@@ -32,6 +31,22 @@ const addRecord = (value) => new Promise((resolve, reject) => {
     });
 })
 
+const getRecord = (id) => new Promise((resolve, reject) => {
+  var docRef = db.collection(COLLECTION_NAME).doc(id);
+
+  docRef.get().then((doc) => {
+    if (doc.exists) {
+      resolve(doc.data())
+    } else {
+      reject("No such document!");
+    }
+  }).catch((error) => {
+    reject("Error getting document:", error);
+  });
+
+})
+
 module.exports = {
-  addRecord
+  addRecord,
+  getRecord
 }
