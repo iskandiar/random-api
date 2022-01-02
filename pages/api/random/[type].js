@@ -1,7 +1,7 @@
 import { createRequest } from '@utils/api'
 
 const availableTypes = [
-  'dice', 'item', 'number', 'weekday', 'sequence', 'uuid', 'date'
+  'dice', 'item', 'number', 'uuid'
 ]
 
 export default async function handler(req, res) {

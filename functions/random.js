@@ -1,4 +1,4 @@
-const { getRandom } = require('./utils/random')
+const { getRandom, getRandomUuid, getRandomDay } = require('./utils/random')
 
 const generateRange = len => Array.from(Array(len).keys())
 
@@ -27,27 +27,38 @@ const formatResponse = ({result, rawResult, format}) => ({
   statusCode: 200,
   body: JSON.stringify({ 
     result,
-    ...(format !== "json" ? { rawResult } : {})
+    ...(format !== "json" ? { rawResult: rawResult || result } : {})
   })
 })
 
 exports.handler = async function (event, _context) {
-  // type=list|number|dice|weekday|date|uuid
-
   const { type, format } = event.queryStringParameters
 
   if(type === 'item') {
     const { list, pick } = event.queryStringParameters
     const result = itemHandler(list, parseInt(pick))
-    
+
     return formatResponse({result, rawResult: result.join(", "), format})
   }
 
   if (type === 'dice') {
-    const result = getRandom(1, 6)
-    return formatResponse(result, result, format)
+    const { rolls = 1} = event.queryStringParameters
+    const result = generateRange(parseInt(rolls)).map(() => getRandom(1, 6))
+    return formatResponse({ result, rawResult: result.join(", "), format })
   }
 
+  if (type === 'number') {
+    const { min = 0, max = 100 } = event.queryStringParameters
+    const result = getRandom(min, max)
+
+    return formatResponse({ result, format })
+  }
+
+  if (type === 'uuid') {
+    const result = getRandomUuid()
+
+    return formatResponse({ result, format })
+  }
 
   return {
     statusCode: 200,
