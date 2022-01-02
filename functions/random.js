@@ -1,4 +1,5 @@
-const { getRandom, getRandomUuid, getRandomDay } = require('./utils/random')
+const { getRandom, getRandomUuid } = require('./utils/random')
+const { addRecord } = require('./utils/db')
 
 const generateRange = len => Array.from(Array(len).keys())
 
@@ -32,7 +33,16 @@ const formatResponse = ({result, rawResult, format}) => ({
 })
 
 exports.handler = async function (event, _context) {
-  const { type, format } = event.queryStringParameters
+  const { type, format , save} = event.queryStringParameters
+
+  if (save === 'true') {
+    const { save, ...restParams } = event.queryStringParameters
+
+    const id = await addRecord(JSON.stringify(restParams))
+
+    // TO-DO return in response as href
+    // console.log('id', id)
+  }
 
   if(type === 'item') {
     const { list, pick } = event.queryStringParameters
