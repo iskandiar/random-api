@@ -9,15 +9,7 @@ export default async function handler(req, res) {
 
   if (availableTypes.includes(typeOrId)) {
     await createRequest(req, res, {type: typeOrId})
-  } else {
+  } else if (typeOrId) {
     await createRequest(req, res, {id: typeOrId})
   }
-  
-  
-  // else {
-  //   res.status(400).json({
-  //     error: "Type is not supported"
-  //   })
-  // }
-  
 }

@@ -1,6 +1,6 @@
 const FUNCTION_PATH = '/.netlify/functions/random'
 
-const getFunctionRequestUrl = () => process.env.FUNCTION_HOST  + FUNCTION_PATH
+const getFunctionRequestUrl = () => process.env.FUNCTION_HOST + FUNCTION_PATH
 
 const getAppUrl = (headers, id) => `http://${headers.host}/api/random/${id}`
 

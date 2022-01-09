@@ -57,15 +57,6 @@ exports.handler = async function (event, _context) {
   const { type, format } = queryStrings
 
   const requestId = await getRequestId(queryStrings)
-  // if (save === 'true') {
-  //   const { save, ...restParams } = queryStrings
-
-  //   const reqId = await addRecord(JSON.stringify(restParams))
-
-  //   // TO-DO return in response as href
-  //   // console.log('id', id)
-
-  // }
 
   if(type === 'item') {
     const { list, pick } = queryStrings
@@ -94,8 +85,8 @@ exports.handler = async function (event, _context) {
   }
 
   return {
-    statusCode: 200,
-    body: JSON.stringify({ message: "Hello World" })
+    statusCode: 422,
+    body: JSON.stringify({ message: "Type not supported" })
   };
 }
 
