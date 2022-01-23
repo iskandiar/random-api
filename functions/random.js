@@ -1,7 +1,7 @@
 const { getRandom, getRandomUuid } = require('./utils/random')
 const { addRecord, getRecord } = require('./utils/db')
 
-const generateRange = len => Array.from(Array(len).keys())
+const generateRange = len => Array.apply(null, {length: len}).map(Number.call, Number)
 
 const getRandomItem = (list) => {
   const item = list[getRandom(0, list.length - 1)]
@@ -53,14 +53,15 @@ const getRequestId = async ({ save, ...restParams }) => {
 
 exports.handler = async function (event, _context) {
   const queryStrings = await getQueryStrings(event.queryStringParameters)
-  console.log('queryStrings', queryStrings)
   const { type, format } = queryStrings
 
   const requestId = await getRequestId(queryStrings)
 
   if(type === 'item') {
     const { list, pick } = queryStrings
-    const result = itemHandler(list, parseInt(pick))
+    const result = itemHandler(list, pick && parseInt(pick))
+
+    console.log('result', result)
 
     return formatResponse({ result, rawResult: result.join(", "), format, requestId})
   }
